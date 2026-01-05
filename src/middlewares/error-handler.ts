@@ -15,13 +15,13 @@ export const errorHandler = (
 
   if (err instanceof CustomError) {
     return res
-      .status(err.statusCode)
-      .json({ success: false, error: err.status, message: err.message });
+      .status(err.status)
+      .json({ success: false, error: err.code, message: err.message });
   }
 
   res.status(500).json({
     success: false,
-    error: 'Server Error',
+    error: 'INTERNAL_SERVER_ERROR',
     message: getErrorMessage(err) || 'Internal Server Error',
   });
 };

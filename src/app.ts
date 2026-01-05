@@ -1,12 +1,21 @@
-import express from 'express';
+import express, { type Request, type Response } from 'express';
 import { errorHandler } from './middlewares/error-handler';
 import config from './config/config';
 import { toNodeHandler } from 'better-auth/node';
 import { auth } from './lib/auth';
+import cors, { type CorsOptions } from 'cors';
 
 const app = express();
 
-app.all('/api/auth/*splat', toNodeHandler(auth));
+const corsOptions: CorsOptions = {
+  origin: ['http://localhost:3000'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+
+app.all('/api/auth/{*splat}', toNodeHandler(auth)); // Better auth handler
 
 app.use(express.json());
 
