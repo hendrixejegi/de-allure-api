@@ -1,6 +1,7 @@
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { prisma } from './prisma';
+import config from '../config/config';
 
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:8080',
@@ -9,13 +10,6 @@ export const auth = betterAuth({
     enabled: true,
     minPasswordLength: 8,
     maxPasswordLength: 64,
-  },
-  session: {
-    disableSessionRefresh: true,
-    cookieCache: {
-      enabled: true,
-      maxAge: 60 * 60, // 1 hour
-    },
   },
   database: prismaAdapter(prisma, { provider: 'postgresql' }),
   advanced: {
@@ -28,6 +22,11 @@ export const auth = betterAuth({
      *
      * Disables Origin header enforcement — do NOT enable in production.
      */
-    disableOriginCheck: true,
+    disableOriginCheck: config.nodeEnv === 'development',
+    defaultCookieAttributes: {
+      secure: config.nodeEnv === 'production', // Set to false in development
+      sameSite: config.nodeEnv === 'development' ? 'lax' : 'none', // Or "none" if needed for cross-origin, but only with secure: true
+      // ... other attributes like httpOnly
+    },
   },
 });
