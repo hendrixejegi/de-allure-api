@@ -4,6 +4,7 @@ import config from './config/config';
 import { toNodeHandler } from 'better-auth/node';
 import { auth } from './lib/auth';
 import cors, { type CorsOptions } from 'cors';
+import productsRouter from './routers/product.router';
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.all('/api/auth/{*splat}', toNodeHandler(auth)); // Better auth handler
 app.use(express.json());
 
 // Routes
+app.use('/api/products', productsRouter);
 
 app.use(errorHandler);
 
