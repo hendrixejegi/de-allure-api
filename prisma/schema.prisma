@@ -13,6 +13,8 @@ datasource db {
   provider = "postgresql"
 }
 
+// Authentication
+
 model User {
   id            String    @id
   name          String
@@ -74,4 +76,77 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+// Products
+
+enum Concentration {
+  OIL
+  EDT
+  EDP
+}
+
+enum SizeMl {
+  ML_10
+  ML_15
+  ML_30
+  ML_100
+}
+
+model Product {
+  id            Int           @id @default(autoincrement())
+  name          String        @unique
+  image         String?
+  rating        Int           @default(0)
+  sex           String
+  concentration Concentration
+  variants      Variant[]
+  isActive      Boolean       @default(false)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Variant {
+  id           Int         @id @default(autoincrement())
+  productId    Int
+  sizeMl       SizeMl
+  sellingPrice Decimal
+  costPrice    Decimal
+  sku          String      @unique
+  comboItem    ComboItem[]
+  stock        Stock?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model Stock {
+  id        Int @id @default(autoincrement())
+  variantId Int @unique
+  quantity  Int @default(0)
+
+  variant Variant @relation(fields: [variantId], references: [id])
+}
+
+model Combo {
+  id            Int         @id @default(autoincrement())
+  name          String
+  image         String?
+  sellingPrice  Decimal
+  stockQuantity Int         @default(0)
+  isActive      Boolean
+  comboItems    ComboItem[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model ComboItem {
+  id        Int @id @default(autoincrement())
+  variantId Int
+  comboId   Int
+  quantity  Int
+
+  combo   Combo   @relation(fields: [comboId], references: [id])
+  variant Variant @relation(fields: [variantId], references: [id])
 }
