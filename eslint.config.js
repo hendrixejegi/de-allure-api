@@ -1,12 +1,16 @@
 // eslint.config.js
 import js from '@eslint/js';
+import { defineConfig } from 'eslint/config';
+import prettier from 'eslint-config-prettier';
+import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
-import prettier from 'eslint-config-prettier';
-import { defineConfig } from 'eslint/config';
 
 export default defineConfig([
   {
+    plugins: {
+      'simple-import-sort': simpleImportSort,
+    },
     files: ['**/*.{js,ts}'],
     languageOptions: {
       globals: {
@@ -21,6 +25,8 @@ export default defineConfig([
         'warn',
         { argsIgnorePattern: '^(req|res|next)$' },
       ],
+      'simple-import-sort/imports': 'error',
+      'simple-import-sort/exports': 'error',
     },
   },
   tseslint.configs.recommended,

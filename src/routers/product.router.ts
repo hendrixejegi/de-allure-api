@@ -1,7 +1,8 @@
-import { Router } from 'express';
 import type { Router as ExpressRouter } from 'express';
-import { checkAuth } from '../middlewares/check-auth';
+import { Router } from 'express';
+
 import { createProduct } from '../controllers/product.controller';
+import { checkAuth } from '../middlewares/check-auth';
 
 const router: ExpressRouter = Router();
 

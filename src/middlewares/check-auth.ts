@@ -1,4 +1,5 @@
 import type { NextFunction, Request, Response } from 'express';
+
 import { auth } from '../lib/auth';
 import { CustomError } from '../lib/error';
 

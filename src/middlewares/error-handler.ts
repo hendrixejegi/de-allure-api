@@ -1,9 +1,11 @@
-import type { Request, Response, NextFunction } from 'express';
-import type { ApiResponse } from '../types/api';
-import { CustomError, getErrorMessage } from '../lib/error';
+import type { NextFunction, Request, Response } from 'express';
+
 import config from '../config/config';
+import { CustomError, getErrorMessage } from '../lib/error';
+import type { ApiResponse } from '../types/api';
 
 export const errorHandler = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   err: any,
   req: Request,
   res: Response<ApiResponse>,

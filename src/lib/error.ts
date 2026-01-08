@@ -18,6 +18,7 @@ export class CustomError extends Error {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getErrorMessage(err: any): string | null {
   if (typeof err === 'object' && 'message' in err) {
     return err.message;
