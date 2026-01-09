@@ -1,0 +1,27 @@
+import type { Request } from 'express';
+import multer from 'multer';
+
+interface MulterRequest extends Request {
+  file?: Express.Multer.File;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const fileFilter = (req: MulterRequest, file: Express.Multer.File, cb: any) => {
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+
+  if (!allowedTypes.includes(file.mimetype)) {
+    return cb(new Error('Only JPEG, PNG, and JPG images are allowed'), false);
+  }
+
+  return cb(null, true);
+};
+
+const storage = multer.memoryStorage();
+
+export const upload = multer({
+  storage,
+  fileFilter,
+  limits: {
+    fileSize: 1 * 1024 * 1024, // Maz image size is 1 MB
+  },
+});
