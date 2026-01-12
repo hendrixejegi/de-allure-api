@@ -86,6 +86,12 @@ enum Concentration {
   EDP
 }
 
+enum Sex {
+  M
+  F
+  UNI
+}
+
 enum SizeMl {
   ML_10
   ML_15
@@ -98,7 +104,7 @@ model Product {
   name          String        @unique
   image         String?
   rating        Int           @default(0)
-  sex           String
+  sex           Sex
   concentration Concentration
   variants      Variant[]
   isActive      Boolean       @default(false)

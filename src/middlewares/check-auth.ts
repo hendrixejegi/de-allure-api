@@ -20,5 +20,7 @@ export async function checkAuth(
     });
   }
 
+  req.userId = session.user.id;
+
   next();
 }

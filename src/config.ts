@@ -4,12 +4,12 @@ dotenv.config();
 
 interface Config {
   port: number;
-  nodeEnv: string;
+  nodeEnv: string | undefined;
 }
 
 const config: Config = {
-  port: Number(process.env.PORT) || 8080,
-  nodeEnv: process.env.NODE_ENV || 'development',
+  port: Number(process.env.PORT),
+  nodeEnv: process.env.NODE_ENV,
 };
 
 export default config;

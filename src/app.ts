@@ -6,32 +6,15 @@ import express, {
   type Response,
 } from 'express';
 
-import config from './config/config';
+import config from './config';
 import { auth } from './lib/auth';
 import { CustomError } from './lib/error';
-import { deleteImageFromR2, uploadImageToR2 } from './lib/file';
+import { deleteImageFromR2 } from './lib/file';
+import { checkAuth } from './middlewares/check-auth';
 import { errorHandler } from './middlewares/error-handler';
-import { upload } from './middlewares/multer-middleware';
+import bucketRouter from './routers/bucket.router';
 import productsRouter from './routers/product.router';
 import type { ApiResponse } from './types/api';
-
-async function uploadImageToCloudFlare(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
-  if (!req.file) {
-    throw new CustomError({
-      code: 'BAD_REQUEST',
-      status: 400,
-      message: 'There is no file to upload',
-    });
-  }
-
-  const imageUrl = await uploadImageToR2(req.file, 'profile');
-
-  res.send({ message: 'Upload success', image_url: imageUrl });
-}
 
 async function deleteImageFromCloudFlare(
   req: Request<object, object, { key: string }>,
@@ -76,8 +59,8 @@ app.use(express.json());
 
 // Routers
 app.use('/api/products', productsRouter);
-app.post('/image', upload.single('image'), uploadImageToCloudFlare);
-app.delete('/image', deleteImageFromCloudFlare);
+app.use('/api/bucket', checkAuth, bucketRouter);
+// app.delete('/image', deleteImageFromCloudFlare);
 
 app.use(errorHandler);
 
