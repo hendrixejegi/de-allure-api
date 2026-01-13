@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto';
+
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import type { Request, Response } from 'express';
@@ -9,7 +11,7 @@ import { S3 } from '../services/r2';
 import type { ApiResponse } from '../types/api';
 
 export async function uploadImageToR2(
-  req: Request<object, object, { name: string; type: string; size: number }>,
+  req: Request<object, object, { type: string; size: number }>,
   res: Response<ApiResponse>,
 ) {
   // Validate request body
@@ -41,7 +43,7 @@ export async function uploadImageToR2(
   }
 
   // Validate file information
-  const { name, size, type } = req.body;
+  const { size, type } = req.body;
 
   if (type !== 'image/jpeg' && type !== 'image/png') {
     throw new CustomError({
@@ -65,7 +67,9 @@ export async function uploadImageToR2(
     throw Error('S3 is not configured');
   }
 
-  const key = `${req.userId}/${name}`;
+  const safeName = randomUUID() + '.' + type.split('/')[1];
+
+  const key = `${req.userId}/${safeName}`;
   const imageUrl = `${process.env.R2_PUBLIC_URL}/${key}`;
 
   const postUrl = await getSignedUrl(
