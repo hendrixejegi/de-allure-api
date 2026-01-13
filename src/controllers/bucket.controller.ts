@@ -5,7 +5,10 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import type { Request, Response } from 'express';
 
 import { CustomError } from '../lib/error';
-import { validateRequestBody } from '../lib/request-validation';
+import {
+  checkValidateRequestResult,
+  validateRequestBody,
+} from '../lib/request-validation';
 import { bytesToMegabytes } from '../lib/utils';
 import { S3 } from '../services/r2';
 import type { ApiResponse } from '../types/api';
@@ -15,32 +18,12 @@ export async function uploadImageToR2(
   res: Response<ApiResponse>,
 ) {
   // Validate request body
-  const { isValid, missing, unexpected } = validateRequestBody(req, [
-    'name',
-    'type',
-    'size',
-  ]);
+  const result = checkValidateRequestResult(
+    validateRequestBody(req, ['type', 'size']),
+  );
 
-  // Handle invalid request body
-  if (!isValid) {
-    if (missing.length > 0) {
-      throw new CustomError({
-        code: 'BAD_REQUEST',
-        status: 400,
-        message: 'Missing Fields',
-        data: { missing, imageUrl: undefined, putUrl: undefined },
-      });
-    }
-
-    if (unexpected.length > 0) {
-      throw new CustomError({
-        code: 'BAD_REQUEST',
-        status: 400,
-        message: 'Unexpected Fields',
-        data: { unexpected, imageUrl: undefined, putUrl: undefined },
-      });
-    }
-  }
+  // checkValidateRequestResult will throw error if invalid. this line just points out the end of the process
+  if (!result) return;
 
   // Validate file information
   const { size, type } = req.body;
