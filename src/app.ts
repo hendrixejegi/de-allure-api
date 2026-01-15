@@ -22,10 +22,11 @@ app.use(cors(corsOptions));
 app.all('/api/auth/{*splat}', toNodeHandler(auth)); // Better auth handler
 
 app.use(express.json());
+app.use(checkAuth);
 
 // Routers
+app.use('/api/bucket', bucketRouter);
 app.use('/api/products', productsRouter);
-app.use('/api/bucket', checkAuth, bucketRouter);
 // app.delete('/image', deleteImageFromCloudFlare);
 
 app.use(errorHandler);

@@ -5,7 +5,6 @@ interface MulterRequest extends Request {
   file?: Express.Multer.File;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const fileFilter = (req: MulterRequest, file: Express.Multer.File, cb: any) => {
   const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
 

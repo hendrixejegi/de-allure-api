@@ -9,7 +9,12 @@ export class CustomError<T = unknown> extends Error {
     message,
     data,
   }: {
-    code: 'BAD_REQUEST' | 'UNAUTHORIZED' | 'SERVER_ERROR' | 'NOT_FOUND';
+    code:
+      | 'BAD_REQUEST'
+      | 'UNAUTHORIZED'
+      | 'SERVER_ERROR'
+      | 'NOT_FOUND'
+      | 'INVALID_INPUT';
     status: number;
     message: string;
     data?: T;
@@ -21,7 +26,6 @@ export class CustomError<T = unknown> extends Error {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getErrorMessage(err: any): string | null {
   if (typeof err === 'object' && 'message' in err) {
     return err.message;

@@ -56,7 +56,6 @@ export async function uploadImageToR2(
   const imageUrl = `${process.env.R2_PUBLIC_URL}/${key}`;
 
   const postUrl = await getSignedUrl(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     S3 as any,
     new PutObjectCommand({
       Bucket: process.env.R2_BUCKET_NAME,

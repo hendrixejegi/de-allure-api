@@ -5,7 +5,6 @@ import { CustomError, getErrorMessage } from '../lib/error';
 import type { ApiResponse } from '../types/api';
 
 export const errorHandler = (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   err: any,
   req: Request,
   res: Response<ApiResponse>,
@@ -18,7 +17,7 @@ export const errorHandler = (
 
   // Log in development
   if (config.nodeEnv === 'development') {
-    console.error('Error:', err);
+    console.error('Error:', err.message);
   }
 
   // Handle CustomError
@@ -36,5 +35,6 @@ export const errorHandler = (
     success: false,
     error: 'INTERNAL_SERVER_ERROR',
     message: getErrorMessage(err) || 'Internal Server Error',
+    data: err,
   });
 };

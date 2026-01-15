@@ -52,7 +52,6 @@ export function validateObject(obj: unknown, R: string[], O: string[] = []) {
  * @returns
  */
 export function validateRequestBody(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   req: Request<object, object, any>,
   R: string[],
   O: string[] = [],
@@ -99,6 +98,4 @@ export function checkValidateRequestResult(result: ValidateRequestResult) {
       });
     }
   }
-
-  return true;
 }

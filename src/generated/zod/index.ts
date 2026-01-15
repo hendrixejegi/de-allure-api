@@ -1,8 +1,3 @@
-// import {
-//   Decimal as PrismaDecimal,
-//   DecimalJsLike,
-// } from '@prisma/client/runtime/library';
-
 import {
   Decimal as PrismaDecimal,
   type DecimalJsLike,
@@ -10,6 +5,7 @@ import {
 import { z } from 'zod';
 
 import { Prisma } from '../prisma/client';
+
 /////////////////////////////////////////
 // HELPER FUNCTIONS
 /////////////////////////////////////////
@@ -245,7 +241,7 @@ export type Verification = z.infer<typeof VerificationSchema>;
 export const ProductSchema = z.object({
   sex: SexSchema,
   concentration: ConcentrationSchema,
-  id: z.number().int(),
+  id: z.uuid(),
   name: z.string(),
   image: z.string().nullable(),
   rating: z.number().int(),
@@ -262,8 +258,8 @@ export type Product = z.infer<typeof ProductSchema>;
 
 export const VariantSchema = z.object({
   sizeMl: SizeMlSchema,
-  id: z.number().int(),
-  productId: z.number().int(),
+  id: z.uuid(),
+  productId: z.string(),
   sellingPrice: z.instanceof(PrismaDecimal, {
     message:
       "Field 'sellingPrice' must be a Decimal. Location: ['Models', 'Variant']",
@@ -284,8 +280,8 @@ export type Variant = z.infer<typeof VariantSchema>;
 /////////////////////////////////////////
 
 export const StockSchema = z.object({
-  id: z.number().int(),
-  variantId: z.number().int(),
+  id: z.uuid(),
+  variantId: z.string(),
   quantity: z.number().int(),
 });
 
@@ -296,7 +292,7 @@ export type Stock = z.infer<typeof StockSchema>;
 /////////////////////////////////////////
 
 export const ComboSchema = z.object({
-  id: z.number().int(),
+  id: z.uuid(),
   name: z.string(),
   image: z.string().nullable(),
   sellingPrice: z.instanceof(PrismaDecimal, {
@@ -316,9 +312,9 @@ export type Combo = z.infer<typeof ComboSchema>;
 /////////////////////////////////////////
 
 export const ComboItemSchema = z.object({
-  id: z.number().int(),
-  variantId: z.number().int(),
-  comboId: z.number().int(),
+  id: z.uuid(),
+  variantId: z.string(),
+  comboId: z.string(),
   quantity: z.number().int(),
 });
 
@@ -1605,7 +1601,7 @@ export const ProductWhereInputSchema: z.ZodType<Prisma.ProductWhereInput> =
         z.lazy(() => ProductWhereInputSchema).array(),
       ])
       .optional(),
-    id: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
+    id: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
     name: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
     image: z
       .union([z.lazy(() => StringNullableFilterSchema), z.string()])
@@ -1656,11 +1652,11 @@ export const ProductWhereUniqueInputSchema: z.ZodType<Prisma.ProductWhereUniqueI
   z
     .union([
       z.object({
-        id: z.number().int(),
+        id: z.uuid(),
         name: z.string(),
       }),
       z.object({
-        id: z.number().int(),
+        id: z.uuid(),
       }),
       z.object({
         name: z.string(),
@@ -1668,7 +1664,7 @@ export const ProductWhereUniqueInputSchema: z.ZodType<Prisma.ProductWhereUniqueI
     ])
     .and(
       z.strictObject({
-        id: z.number().int().optional(),
+        id: z.uuid().optional(),
         name: z.string().optional(),
         AND: z
           .union([
@@ -1757,7 +1753,7 @@ export const ProductScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.Produ
       ])
       .optional(),
     id: z
-      .union([z.lazy(() => IntWithAggregatesFilterSchema), z.number()])
+      .union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()])
       .optional(),
     name: z
       .union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()])
@@ -1819,8 +1815,10 @@ export const VariantWhereInputSchema: z.ZodType<Prisma.VariantWhereInput> =
         z.lazy(() => VariantWhereInputSchema).array(),
       ])
       .optional(),
-    id: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
-    productId: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
+    id: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
+    productId: z
+      .union([z.lazy(() => StringFilterSchema), z.string()])
+      .optional(),
     sizeMl: z
       .union([z.lazy(() => EnumSizeMlFilterSchema), z.lazy(() => SizeMlSchema)])
       .optional(),
@@ -1898,11 +1896,11 @@ export const VariantWhereUniqueInputSchema: z.ZodType<Prisma.VariantWhereUniqueI
   z
     .union([
       z.object({
-        id: z.number().int(),
+        id: z.uuid(),
         sku: z.string(),
       }),
       z.object({
-        id: z.number().int(),
+        id: z.uuid(),
       }),
       z.object({
         sku: z.string(),
@@ -1910,7 +1908,7 @@ export const VariantWhereUniqueInputSchema: z.ZodType<Prisma.VariantWhereUniqueI
     ])
     .and(
       z.strictObject({
-        id: z.number().int().optional(),
+        id: z.uuid().optional(),
         sku: z.string().optional(),
         AND: z
           .union([
@@ -1929,7 +1927,7 @@ export const VariantWhereUniqueInputSchema: z.ZodType<Prisma.VariantWhereUniqueI
           ])
           .optional(),
         productId: z
-          .union([z.lazy(() => IntFilterSchema), z.number().int()])
+          .union([z.lazy(() => StringFilterSchema), z.string()])
           .optional(),
         sizeMl: z
           .union([
@@ -2026,10 +2024,10 @@ export const VariantScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.Varia
       ])
       .optional(),
     id: z
-      .union([z.lazy(() => IntWithAggregatesFilterSchema), z.number()])
+      .union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()])
       .optional(),
     productId: z
-      .union([z.lazy(() => IntWithAggregatesFilterSchema), z.number()])
+      .union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()])
       .optional(),
     sizeMl: z
       .union([
@@ -2102,8 +2100,10 @@ export const StockWhereInputSchema: z.ZodType<Prisma.StockWhereInput> =
         z.lazy(() => StockWhereInputSchema).array(),
       ])
       .optional(),
-    id: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
-    variantId: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
+    id: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
+    variantId: z
+      .union([z.lazy(() => StringFilterSchema), z.string()])
+      .optional(),
     quantity: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
     variant: z
       .union([
@@ -2125,20 +2125,20 @@ export const StockWhereUniqueInputSchema: z.ZodType<Prisma.StockWhereUniqueInput
   z
     .union([
       z.object({
-        id: z.number().int(),
-        variantId: z.number().int(),
+        id: z.uuid(),
+        variantId: z.string(),
       }),
       z.object({
-        id: z.number().int(),
+        id: z.uuid(),
       }),
       z.object({
-        variantId: z.number().int(),
+        variantId: z.string(),
       }),
     ])
     .and(
       z.strictObject({
-        id: z.number().int().optional(),
-        variantId: z.number().int().optional(),
+        id: z.uuid().optional(),
+        variantId: z.string().optional(),
         AND: z
           .union([
             z.lazy(() => StockWhereInputSchema),
@@ -2198,10 +2198,10 @@ export const StockScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.StockSc
       ])
       .optional(),
     id: z
-      .union([z.lazy(() => IntWithAggregatesFilterSchema), z.number()])
+      .union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()])
       .optional(),
     variantId: z
-      .union([z.lazy(() => IntWithAggregatesFilterSchema), z.number()])
+      .union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()])
       .optional(),
     quantity: z
       .union([z.lazy(() => IntWithAggregatesFilterSchema), z.number()])
@@ -2226,7 +2226,7 @@ export const ComboWhereInputSchema: z.ZodType<Prisma.ComboWhereInput> =
         z.lazy(() => ComboWhereInputSchema).array(),
       ])
       .optional(),
-    id: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
+    id: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
     name: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
     image: z
       .union([z.lazy(() => StringNullableFilterSchema), z.string()])
@@ -2283,11 +2283,11 @@ export const ComboOrderByWithRelationInputSchema: z.ZodType<Prisma.ComboOrderByW
 export const ComboWhereUniqueInputSchema: z.ZodType<Prisma.ComboWhereUniqueInput> =
   z
     .object({
-      id: z.number().int(),
+      id: z.uuid(),
     })
     .and(
       z.strictObject({
-        id: z.number().int().optional(),
+        id: z.uuid().optional(),
         AND: z
           .union([
             z.lazy(() => ComboWhereInputSchema),
@@ -2383,7 +2383,7 @@ export const ComboScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.ComboSc
       ])
       .optional(),
     id: z
-      .union([z.lazy(() => IntWithAggregatesFilterSchema), z.number()])
+      .union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()])
       .optional(),
     name: z
       .union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()])
@@ -2448,9 +2448,11 @@ export const ComboItemWhereInputSchema: z.ZodType<Prisma.ComboItemWhereInput> =
         z.lazy(() => ComboItemWhereInputSchema).array(),
       ])
       .optional(),
-    id: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
-    variantId: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
-    comboId: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
+    id: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
+    variantId: z
+      .union([z.lazy(() => StringFilterSchema), z.string()])
+      .optional(),
+    comboId: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
     quantity: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
     combo: z
       .union([
@@ -2479,11 +2481,11 @@ export const ComboItemOrderByWithRelationInputSchema: z.ZodType<Prisma.ComboItem
 export const ComboItemWhereUniqueInputSchema: z.ZodType<Prisma.ComboItemWhereUniqueInput> =
   z
     .object({
-      id: z.number().int(),
+      id: z.uuid(),
     })
     .and(
       z.strictObject({
-        id: z.number().int().optional(),
+        id: z.uuid().optional(),
         AND: z
           .union([
             z.lazy(() => ComboItemWhereInputSchema),
@@ -2501,10 +2503,10 @@ export const ComboItemWhereUniqueInputSchema: z.ZodType<Prisma.ComboItemWhereUni
           ])
           .optional(),
         variantId: z
-          .union([z.lazy(() => IntFilterSchema), z.number().int()])
+          .union([z.lazy(() => StringFilterSchema), z.string()])
           .optional(),
         comboId: z
-          .union([z.lazy(() => IntFilterSchema), z.number().int()])
+          .union([z.lazy(() => StringFilterSchema), z.string()])
           .optional(),
         quantity: z
           .union([z.lazy(() => IntFilterSchema), z.number().int()])
@@ -2556,13 +2558,13 @@ export const ComboItemScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.Com
       ])
       .optional(),
     id: z
-      .union([z.lazy(() => IntWithAggregatesFilterSchema), z.number()])
+      .union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()])
       .optional(),
     variantId: z
-      .union([z.lazy(() => IntWithAggregatesFilterSchema), z.number()])
+      .union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()])
       .optional(),
     comboId: z
-      .union([z.lazy(() => IntWithAggregatesFilterSchema), z.number()])
+      .union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()])
       .optional(),
     quantity: z
       .union([z.lazy(() => IntWithAggregatesFilterSchema), z.number()])
@@ -3491,6 +3493,7 @@ export const VerificationUncheckedUpdateManyInputSchema: z.ZodType<Prisma.Verifi
 
 export const ProductCreateInputSchema: z.ZodType<Prisma.ProductCreateInput> =
   z.strictObject({
+    id: z.uuid().optional(),
     name: z.string(),
     image: z.string().optional().nullable(),
     rating: z.number().int().optional(),
@@ -3506,7 +3509,7 @@ export const ProductCreateInputSchema: z.ZodType<Prisma.ProductCreateInput> =
 
 export const ProductUncheckedCreateInputSchema: z.ZodType<Prisma.ProductUncheckedCreateInput> =
   z.strictObject({
-    id: z.number().int().optional(),
+    id: z.uuid().optional(),
     name: z.string(),
     image: z.string().optional().nullable(),
     rating: z.number().int().optional(),
@@ -3522,6 +3525,9 @@ export const ProductUncheckedCreateInputSchema: z.ZodType<Prisma.ProductUnchecke
 
 export const ProductUpdateInputSchema: z.ZodType<Prisma.ProductUpdateInput> =
   z.strictObject({
+    id: z
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
+      .optional(),
     name: z
       .union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
@@ -3573,10 +3579,7 @@ export const ProductUpdateInputSchema: z.ZodType<Prisma.ProductUpdateInput> =
 export const ProductUncheckedUpdateInputSchema: z.ZodType<Prisma.ProductUncheckedUpdateInput> =
   z.strictObject({
     id: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     name: z
       .union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
@@ -3628,7 +3631,7 @@ export const ProductUncheckedUpdateInputSchema: z.ZodType<Prisma.ProductUnchecke
 
 export const ProductCreateManyInputSchema: z.ZodType<Prisma.ProductCreateManyInput> =
   z.strictObject({
-    id: z.number().int().optional(),
+    id: z.uuid().optional(),
     name: z.string(),
     image: z.string().optional().nullable(),
     rating: z.number().int().optional(),
@@ -3641,6 +3644,9 @@ export const ProductCreateManyInputSchema: z.ZodType<Prisma.ProductCreateManyInp
 
 export const ProductUpdateManyMutationInputSchema: z.ZodType<Prisma.ProductUpdateManyMutationInput> =
   z.strictObject({
+    id: z
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
+      .optional(),
     name: z
       .union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
@@ -3689,10 +3695,7 @@ export const ProductUpdateManyMutationInputSchema: z.ZodType<Prisma.ProductUpdat
 export const ProductUncheckedUpdateManyInputSchema: z.ZodType<Prisma.ProductUncheckedUpdateManyInput> =
   z.strictObject({
     id: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     name: z
       .union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
@@ -3741,6 +3744,7 @@ export const ProductUncheckedUpdateManyInputSchema: z.ZodType<Prisma.ProductUnch
 
 export const VariantCreateInputSchema: z.ZodType<Prisma.VariantCreateInput> =
   z.strictObject({
+    id: z.uuid().optional(),
     sizeMl: z.lazy(() => SizeMlSchema),
     sellingPrice: z
       .union([
@@ -3772,8 +3776,8 @@ export const VariantCreateInputSchema: z.ZodType<Prisma.VariantCreateInput> =
 
 export const VariantUncheckedCreateInputSchema: z.ZodType<Prisma.VariantUncheckedCreateInput> =
   z.strictObject({
-    id: z.number().int().optional(),
-    productId: z.number().int(),
+    id: z.uuid().optional(),
+    productId: z.string(),
     sizeMl: z.lazy(() => SizeMlSchema),
     sellingPrice: z
       .union([
@@ -3804,6 +3808,9 @@ export const VariantUncheckedCreateInputSchema: z.ZodType<Prisma.VariantUnchecke
 
 export const VariantUpdateInputSchema: z.ZodType<Prisma.VariantUpdateInput> =
   z.strictObject({
+    id: z
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
+      .optional(),
     sizeMl: z
       .union([
         z.lazy(() => SizeMlSchema),
@@ -3869,16 +3876,10 @@ export const VariantUpdateInputSchema: z.ZodType<Prisma.VariantUpdateInput> =
 export const VariantUncheckedUpdateInputSchema: z.ZodType<Prisma.VariantUncheckedUpdateInput> =
   z.strictObject({
     id: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     productId: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     sizeMl: z
       .union([
@@ -3941,8 +3942,8 @@ export const VariantUncheckedUpdateInputSchema: z.ZodType<Prisma.VariantUnchecke
 
 export const VariantCreateManyInputSchema: z.ZodType<Prisma.VariantCreateManyInput> =
   z.strictObject({
-    id: z.number().int().optional(),
-    productId: z.number().int(),
+    id: z.uuid().optional(),
+    productId: z.string(),
     sizeMl: z.lazy(() => SizeMlSchema),
     sellingPrice: z
       .union([
@@ -3967,6 +3968,9 @@ export const VariantCreateManyInputSchema: z.ZodType<Prisma.VariantCreateManyInp
 
 export const VariantUpdateManyMutationInputSchema: z.ZodType<Prisma.VariantUpdateManyMutationInput> =
   z.strictObject({
+    id: z
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
+      .optional(),
     sizeMl: z
       .union([
         z.lazy(() => SizeMlSchema),
@@ -4023,16 +4027,10 @@ export const VariantUpdateManyMutationInputSchema: z.ZodType<Prisma.VariantUpdat
 export const VariantUncheckedUpdateManyInputSchema: z.ZodType<Prisma.VariantUncheckedUpdateManyInput> =
   z.strictObject({
     id: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     productId: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     sizeMl: z
       .union([
@@ -4089,19 +4087,23 @@ export const VariantUncheckedUpdateManyInputSchema: z.ZodType<Prisma.VariantUnch
 
 export const StockCreateInputSchema: z.ZodType<Prisma.StockCreateInput> =
   z.strictObject({
+    id: z.uuid().optional(),
     quantity: z.number().int().optional(),
     variant: z.lazy(() => VariantCreateNestedOneWithoutStockInputSchema),
   });
 
 export const StockUncheckedCreateInputSchema: z.ZodType<Prisma.StockUncheckedCreateInput> =
   z.strictObject({
-    id: z.number().int().optional(),
-    variantId: z.number().int(),
+    id: z.uuid().optional(),
+    variantId: z.string(),
     quantity: z.number().int().optional(),
   });
 
 export const StockUpdateInputSchema: z.ZodType<Prisma.StockUpdateInput> =
   z.strictObject({
+    id: z
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
+      .optional(),
     quantity: z
       .union([
         z.number().int(),
@@ -4116,16 +4118,10 @@ export const StockUpdateInputSchema: z.ZodType<Prisma.StockUpdateInput> =
 export const StockUncheckedUpdateInputSchema: z.ZodType<Prisma.StockUncheckedUpdateInput> =
   z.strictObject({
     id: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     variantId: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     quantity: z
       .union([
@@ -4137,13 +4133,16 @@ export const StockUncheckedUpdateInputSchema: z.ZodType<Prisma.StockUncheckedUpd
 
 export const StockCreateManyInputSchema: z.ZodType<Prisma.StockCreateManyInput> =
   z.strictObject({
-    id: z.number().int().optional(),
-    variantId: z.number().int(),
+    id: z.uuid().optional(),
+    variantId: z.string(),
     quantity: z.number().int().optional(),
   });
 
 export const StockUpdateManyMutationInputSchema: z.ZodType<Prisma.StockUpdateManyMutationInput> =
   z.strictObject({
+    id: z
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
+      .optional(),
     quantity: z
       .union([
         z.number().int(),
@@ -4155,16 +4154,10 @@ export const StockUpdateManyMutationInputSchema: z.ZodType<Prisma.StockUpdateMan
 export const StockUncheckedUpdateManyInputSchema: z.ZodType<Prisma.StockUncheckedUpdateManyInput> =
   z.strictObject({
     id: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     variantId: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     quantity: z
       .union([
@@ -4176,6 +4169,7 @@ export const StockUncheckedUpdateManyInputSchema: z.ZodType<Prisma.StockUnchecke
 
 export const ComboCreateInputSchema: z.ZodType<Prisma.ComboCreateInput> =
   z.strictObject({
+    id: z.uuid().optional(),
     name: z.string(),
     image: z.string().optional().nullable(),
     sellingPrice: z
@@ -4197,7 +4191,7 @@ export const ComboCreateInputSchema: z.ZodType<Prisma.ComboCreateInput> =
 
 export const ComboUncheckedCreateInputSchema: z.ZodType<Prisma.ComboUncheckedCreateInput> =
   z.strictObject({
-    id: z.number().int().optional(),
+    id: z.uuid().optional(),
     name: z.string(),
     image: z.string().optional().nullable(),
     sellingPrice: z
@@ -4219,6 +4213,9 @@ export const ComboUncheckedCreateInputSchema: z.ZodType<Prisma.ComboUncheckedCre
 
 export const ComboUpdateInputSchema: z.ZodType<Prisma.ComboUpdateInput> =
   z.strictObject({
+    id: z
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
+      .optional(),
     name: z
       .union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
@@ -4273,10 +4270,7 @@ export const ComboUpdateInputSchema: z.ZodType<Prisma.ComboUpdateInput> =
 export const ComboUncheckedUpdateInputSchema: z.ZodType<Prisma.ComboUncheckedUpdateInput> =
   z.strictObject({
     id: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     name: z
       .union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
@@ -4331,7 +4325,7 @@ export const ComboUncheckedUpdateInputSchema: z.ZodType<Prisma.ComboUncheckedUpd
 
 export const ComboCreateManyInputSchema: z.ZodType<Prisma.ComboCreateManyInput> =
   z.strictObject({
-    id: z.number().int().optional(),
+    id: z.uuid().optional(),
     name: z.string(),
     image: z.string().optional().nullable(),
     sellingPrice: z
@@ -4350,6 +4344,9 @@ export const ComboCreateManyInputSchema: z.ZodType<Prisma.ComboCreateManyInput> 
 
 export const ComboUpdateManyMutationInputSchema: z.ZodType<Prisma.ComboUpdateManyMutationInput> =
   z.strictObject({
+    id: z
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
+      .optional(),
     name: z
       .union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
@@ -4401,10 +4398,7 @@ export const ComboUpdateManyMutationInputSchema: z.ZodType<Prisma.ComboUpdateMan
 export const ComboUncheckedUpdateManyInputSchema: z.ZodType<Prisma.ComboUncheckedUpdateManyInput> =
   z.strictObject({
     id: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     name: z
       .union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
@@ -4456,6 +4450,7 @@ export const ComboUncheckedUpdateManyInputSchema: z.ZodType<Prisma.ComboUnchecke
 
 export const ComboItemCreateInputSchema: z.ZodType<Prisma.ComboItemCreateInput> =
   z.strictObject({
+    id: z.uuid().optional(),
     quantity: z.number().int(),
     combo: z.lazy(() => ComboCreateNestedOneWithoutComboItemsInputSchema),
     variant: z.lazy(() => VariantCreateNestedOneWithoutComboItemInputSchema),
@@ -4463,14 +4458,17 @@ export const ComboItemCreateInputSchema: z.ZodType<Prisma.ComboItemCreateInput> 
 
 export const ComboItemUncheckedCreateInputSchema: z.ZodType<Prisma.ComboItemUncheckedCreateInput> =
   z.strictObject({
-    id: z.number().int().optional(),
-    variantId: z.number().int(),
-    comboId: z.number().int(),
+    id: z.uuid().optional(),
+    variantId: z.string(),
+    comboId: z.string(),
     quantity: z.number().int(),
   });
 
 export const ComboItemUpdateInputSchema: z.ZodType<Prisma.ComboItemUpdateInput> =
   z.strictObject({
+    id: z
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
+      .optional(),
     quantity: z
       .union([
         z.number().int(),
@@ -4488,22 +4486,13 @@ export const ComboItemUpdateInputSchema: z.ZodType<Prisma.ComboItemUpdateInput> 
 export const ComboItemUncheckedUpdateInputSchema: z.ZodType<Prisma.ComboItemUncheckedUpdateInput> =
   z.strictObject({
     id: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     variantId: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     comboId: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     quantity: z
       .union([
@@ -4515,14 +4504,17 @@ export const ComboItemUncheckedUpdateInputSchema: z.ZodType<Prisma.ComboItemUnch
 
 export const ComboItemCreateManyInputSchema: z.ZodType<Prisma.ComboItemCreateManyInput> =
   z.strictObject({
-    id: z.number().int().optional(),
-    variantId: z.number().int(),
-    comboId: z.number().int(),
+    id: z.uuid().optional(),
+    variantId: z.string(),
+    comboId: z.string(),
     quantity: z.number().int(),
   });
 
 export const ComboItemUpdateManyMutationInputSchema: z.ZodType<Prisma.ComboItemUpdateManyMutationInput> =
   z.strictObject({
+    id: z
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
+      .optional(),
     quantity: z
       .union([
         z.number().int(),
@@ -4534,22 +4526,13 @@ export const ComboItemUpdateManyMutationInputSchema: z.ZodType<Prisma.ComboItemU
 export const ComboItemUncheckedUpdateManyInputSchema: z.ZodType<Prisma.ComboItemUncheckedUpdateManyInput> =
   z.strictObject({
     id: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     variantId: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     comboId: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     quantity: z
       .union([
@@ -4990,7 +4973,6 @@ export const ProductCountOrderByAggregateInputSchema: z.ZodType<Prisma.ProductCo
 
 export const ProductAvgOrderByAggregateInputSchema: z.ZodType<Prisma.ProductAvgOrderByAggregateInput> =
   z.strictObject({
-    id: z.lazy(() => SortOrderSchema).optional(),
     rating: z.lazy(() => SortOrderSchema).optional(),
   });
 
@@ -5022,7 +5004,6 @@ export const ProductMinOrderByAggregateInputSchema: z.ZodType<Prisma.ProductMinO
 
 export const ProductSumOrderByAggregateInputSchema: z.ZodType<Prisma.ProductSumOrderByAggregateInput> =
   z.strictObject({
-    id: z.lazy(() => SortOrderSchema).optional(),
     rating: z.lazy(() => SortOrderSchema).optional(),
   });
 
@@ -5242,8 +5223,6 @@ export const VariantCountOrderByAggregateInputSchema: z.ZodType<Prisma.VariantCo
 
 export const VariantAvgOrderByAggregateInputSchema: z.ZodType<Prisma.VariantAvgOrderByAggregateInput> =
   z.strictObject({
-    id: z.lazy(() => SortOrderSchema).optional(),
-    productId: z.lazy(() => SortOrderSchema).optional(),
     sellingPrice: z.lazy(() => SortOrderSchema).optional(),
     costPrice: z.lazy(() => SortOrderSchema).optional(),
   });
@@ -5274,8 +5253,6 @@ export const VariantMinOrderByAggregateInputSchema: z.ZodType<Prisma.VariantMinO
 
 export const VariantSumOrderByAggregateInputSchema: z.ZodType<Prisma.VariantSumOrderByAggregateInput> =
   z.strictObject({
-    id: z.lazy(() => SortOrderSchema).optional(),
-    productId: z.lazy(() => SortOrderSchema).optional(),
     sellingPrice: z.lazy(() => SortOrderSchema).optional(),
     costPrice: z.lazy(() => SortOrderSchema).optional(),
   });
@@ -5412,8 +5389,6 @@ export const StockCountOrderByAggregateInputSchema: z.ZodType<Prisma.StockCountO
 
 export const StockAvgOrderByAggregateInputSchema: z.ZodType<Prisma.StockAvgOrderByAggregateInput> =
   z.strictObject({
-    id: z.lazy(() => SortOrderSchema).optional(),
-    variantId: z.lazy(() => SortOrderSchema).optional(),
     quantity: z.lazy(() => SortOrderSchema).optional(),
   });
 
@@ -5433,8 +5408,6 @@ export const StockMinOrderByAggregateInputSchema: z.ZodType<Prisma.StockMinOrder
 
 export const StockSumOrderByAggregateInputSchema: z.ZodType<Prisma.StockSumOrderByAggregateInput> =
   z.strictObject({
-    id: z.lazy(() => SortOrderSchema).optional(),
-    variantId: z.lazy(() => SortOrderSchema).optional(),
     quantity: z.lazy(() => SortOrderSchema).optional(),
   });
 
@@ -5452,7 +5425,6 @@ export const ComboCountOrderByAggregateInputSchema: z.ZodType<Prisma.ComboCountO
 
 export const ComboAvgOrderByAggregateInputSchema: z.ZodType<Prisma.ComboAvgOrderByAggregateInput> =
   z.strictObject({
-    id: z.lazy(() => SortOrderSchema).optional(),
     sellingPrice: z.lazy(() => SortOrderSchema).optional(),
     stockQuantity: z.lazy(() => SortOrderSchema).optional(),
   });
@@ -5483,7 +5455,6 @@ export const ComboMinOrderByAggregateInputSchema: z.ZodType<Prisma.ComboMinOrder
 
 export const ComboSumOrderByAggregateInputSchema: z.ZodType<Prisma.ComboSumOrderByAggregateInput> =
   z.strictObject({
-    id: z.lazy(() => SortOrderSchema).optional(),
     sellingPrice: z.lazy(() => SortOrderSchema).optional(),
     stockQuantity: z.lazy(() => SortOrderSchema).optional(),
   });
@@ -5504,9 +5475,6 @@ export const ComboItemCountOrderByAggregateInputSchema: z.ZodType<Prisma.ComboIt
 
 export const ComboItemAvgOrderByAggregateInputSchema: z.ZodType<Prisma.ComboItemAvgOrderByAggregateInput> =
   z.strictObject({
-    id: z.lazy(() => SortOrderSchema).optional(),
-    variantId: z.lazy(() => SortOrderSchema).optional(),
-    comboId: z.lazy(() => SortOrderSchema).optional(),
     quantity: z.lazy(() => SortOrderSchema).optional(),
   });
 
@@ -5528,9 +5496,6 @@ export const ComboItemMinOrderByAggregateInputSchema: z.ZodType<Prisma.ComboItem
 
 export const ComboItemSumOrderByAggregateInputSchema: z.ZodType<Prisma.ComboItemSumOrderByAggregateInput> =
   z.strictObject({
-    id: z.lazy(() => SortOrderSchema).optional(),
-    variantId: z.lazy(() => SortOrderSchema).optional(),
-    comboId: z.lazy(() => SortOrderSchema).optional(),
     quantity: z.lazy(() => SortOrderSchema).optional(),
   });
 
@@ -8006,6 +7971,7 @@ export const UserUncheckedUpdateWithoutAccountsInputSchema: z.ZodType<Prisma.Use
 
 export const VariantCreateWithoutProductInputSchema: z.ZodType<Prisma.VariantCreateWithoutProductInput> =
   z.strictObject({
+    id: z.uuid().optional(),
     sizeMl: z.lazy(() => SizeMlSchema),
     sellingPrice: z
       .union([
@@ -8036,7 +8002,7 @@ export const VariantCreateWithoutProductInputSchema: z.ZodType<Prisma.VariantCre
 
 export const VariantUncheckedCreateWithoutProductInputSchema: z.ZodType<Prisma.VariantUncheckedCreateWithoutProductInput> =
   z.strictObject({
-    id: z.number().int().optional(),
+    id: z.uuid().optional(),
     sizeMl: z.lazy(() => SizeMlSchema),
     sellingPrice: z
       .union([
@@ -8132,8 +8098,10 @@ export const VariantScalarWhereInputSchema: z.ZodType<Prisma.VariantScalarWhereI
         z.lazy(() => VariantScalarWhereInputSchema).array(),
       ])
       .optional(),
-    id: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
-    productId: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
+    id: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
+    productId: z
+      .union([z.lazy(() => StringFilterSchema), z.string()])
+      .optional(),
     sizeMl: z
       .union([z.lazy(() => EnumSizeMlFilterSchema), z.lazy(() => SizeMlSchema)])
       .optional(),
@@ -8178,14 +8146,15 @@ export const VariantScalarWhereInputSchema: z.ZodType<Prisma.VariantScalarWhereI
 
 export const ComboItemCreateWithoutVariantInputSchema: z.ZodType<Prisma.ComboItemCreateWithoutVariantInput> =
   z.strictObject({
+    id: z.uuid().optional(),
     quantity: z.number().int(),
     combo: z.lazy(() => ComboCreateNestedOneWithoutComboItemsInputSchema),
   });
 
 export const ComboItemUncheckedCreateWithoutVariantInputSchema: z.ZodType<Prisma.ComboItemUncheckedCreateWithoutVariantInput> =
   z.strictObject({
-    id: z.number().int().optional(),
-    comboId: z.number().int(),
+    id: z.uuid().optional(),
+    comboId: z.string(),
     quantity: z.number().int(),
   });
 
@@ -8209,12 +8178,13 @@ export const ComboItemCreateManyVariantInputEnvelopeSchema: z.ZodType<Prisma.Com
 
 export const StockCreateWithoutVariantInputSchema: z.ZodType<Prisma.StockCreateWithoutVariantInput> =
   z.strictObject({
+    id: z.uuid().optional(),
     quantity: z.number().int().optional(),
   });
 
 export const StockUncheckedCreateWithoutVariantInputSchema: z.ZodType<Prisma.StockUncheckedCreateWithoutVariantInput> =
   z.strictObject({
-    id: z.number().int().optional(),
+    id: z.uuid().optional(),
     quantity: z.number().int().optional(),
   });
 
@@ -8229,6 +8199,7 @@ export const StockCreateOrConnectWithoutVariantInputSchema: z.ZodType<Prisma.Sto
 
 export const ProductCreateWithoutVariantsInputSchema: z.ZodType<Prisma.ProductCreateWithoutVariantsInput> =
   z.strictObject({
+    id: z.uuid().optional(),
     name: z.string(),
     image: z.string().optional().nullable(),
     rating: z.number().int().optional(),
@@ -8241,7 +8212,7 @@ export const ProductCreateWithoutVariantsInputSchema: z.ZodType<Prisma.ProductCr
 
 export const ProductUncheckedCreateWithoutVariantsInputSchema: z.ZodType<Prisma.ProductUncheckedCreateWithoutVariantsInput> =
   z.strictObject({
-    id: z.number().int().optional(),
+    id: z.uuid().optional(),
     name: z.string(),
     image: z.string().optional().nullable(),
     rating: z.number().int().optional(),
@@ -8310,9 +8281,11 @@ export const ComboItemScalarWhereInputSchema: z.ZodType<Prisma.ComboItemScalarWh
         z.lazy(() => ComboItemScalarWhereInputSchema).array(),
       ])
       .optional(),
-    id: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
-    variantId: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
-    comboId: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
+    id: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
+    variantId: z
+      .union([z.lazy(() => StringFilterSchema), z.string()])
+      .optional(),
+    comboId: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
     quantity: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
   });
 
@@ -8340,6 +8313,9 @@ export const StockUpdateToOneWithWhereWithoutVariantInputSchema: z.ZodType<Prism
 
 export const StockUpdateWithoutVariantInputSchema: z.ZodType<Prisma.StockUpdateWithoutVariantInput> =
   z.strictObject({
+    id: z
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
+      .optional(),
     quantity: z
       .union([
         z.number().int(),
@@ -8351,10 +8327,7 @@ export const StockUpdateWithoutVariantInputSchema: z.ZodType<Prisma.StockUpdateW
 export const StockUncheckedUpdateWithoutVariantInputSchema: z.ZodType<Prisma.StockUncheckedUpdateWithoutVariantInput> =
   z.strictObject({
     id: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     quantity: z
       .union([
@@ -8388,6 +8361,9 @@ export const ProductUpdateToOneWithWhereWithoutVariantsInputSchema: z.ZodType<Pr
 
 export const ProductUpdateWithoutVariantsInputSchema: z.ZodType<Prisma.ProductUpdateWithoutVariantsInput> =
   z.strictObject({
+    id: z
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
+      .optional(),
     name: z
       .union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
@@ -8436,10 +8412,7 @@ export const ProductUpdateWithoutVariantsInputSchema: z.ZodType<Prisma.ProductUp
 export const ProductUncheckedUpdateWithoutVariantsInputSchema: z.ZodType<Prisma.ProductUncheckedUpdateWithoutVariantsInput> =
   z.strictObject({
     id: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     name: z
       .union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
@@ -8488,6 +8461,7 @@ export const ProductUncheckedUpdateWithoutVariantsInputSchema: z.ZodType<Prisma.
 
 export const VariantCreateWithoutStockInputSchema: z.ZodType<Prisma.VariantCreateWithoutStockInput> =
   z.strictObject({
+    id: z.uuid().optional(),
     sizeMl: z.lazy(() => SizeMlSchema),
     sellingPrice: z
       .union([
@@ -8516,8 +8490,8 @@ export const VariantCreateWithoutStockInputSchema: z.ZodType<Prisma.VariantCreat
 
 export const VariantUncheckedCreateWithoutStockInputSchema: z.ZodType<Prisma.VariantUncheckedCreateWithoutStockInput> =
   z.strictObject({
-    id: z.number().int().optional(),
-    productId: z.number().int(),
+    id: z.uuid().optional(),
+    productId: z.string(),
     sizeMl: z.lazy(() => SizeMlSchema),
     sellingPrice: z
       .union([
@@ -8576,6 +8550,9 @@ export const VariantUpdateToOneWithWhereWithoutStockInputSchema: z.ZodType<Prism
 
 export const VariantUpdateWithoutStockInputSchema: z.ZodType<Prisma.VariantUpdateWithoutStockInput> =
   z.strictObject({
+    id: z
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
+      .optional(),
     sizeMl: z
       .union([
         z.lazy(() => SizeMlSchema),
@@ -8638,16 +8615,10 @@ export const VariantUpdateWithoutStockInputSchema: z.ZodType<Prisma.VariantUpdat
 export const VariantUncheckedUpdateWithoutStockInputSchema: z.ZodType<Prisma.VariantUncheckedUpdateWithoutStockInput> =
   z.strictObject({
     id: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     productId: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     sizeMl: z
       .union([
@@ -8707,14 +8678,15 @@ export const VariantUncheckedUpdateWithoutStockInputSchema: z.ZodType<Prisma.Var
 
 export const ComboItemCreateWithoutComboInputSchema: z.ZodType<Prisma.ComboItemCreateWithoutComboInput> =
   z.strictObject({
+    id: z.uuid().optional(),
     quantity: z.number().int(),
     variant: z.lazy(() => VariantCreateNestedOneWithoutComboItemInputSchema),
   });
 
 export const ComboItemUncheckedCreateWithoutComboInputSchema: z.ZodType<Prisma.ComboItemUncheckedCreateWithoutComboInput> =
   z.strictObject({
-    id: z.number().int().optional(),
-    variantId: z.number().int(),
+    id: z.uuid().optional(),
+    variantId: z.string(),
     quantity: z.number().int(),
   });
 
@@ -8769,6 +8741,7 @@ export const ComboItemUpdateManyWithWhereWithoutComboInputSchema: z.ZodType<Pris
 
 export const ComboCreateWithoutComboItemsInputSchema: z.ZodType<Prisma.ComboCreateWithoutComboItemsInput> =
   z.strictObject({
+    id: z.uuid().optional(),
     name: z.string(),
     image: z.string().optional().nullable(),
     sellingPrice: z
@@ -8787,7 +8760,7 @@ export const ComboCreateWithoutComboItemsInputSchema: z.ZodType<Prisma.ComboCrea
 
 export const ComboUncheckedCreateWithoutComboItemsInputSchema: z.ZodType<Prisma.ComboUncheckedCreateWithoutComboItemsInput> =
   z.strictObject({
-    id: z.number().int().optional(),
+    id: z.uuid().optional(),
     name: z.string(),
     image: z.string().optional().nullable(),
     sellingPrice: z
@@ -8815,6 +8788,7 @@ export const ComboCreateOrConnectWithoutComboItemsInputSchema: z.ZodType<Prisma.
 
 export const VariantCreateWithoutComboItemInputSchema: z.ZodType<Prisma.VariantCreateWithoutComboItemInput> =
   z.strictObject({
+    id: z.uuid().optional(),
     sizeMl: z.lazy(() => SizeMlSchema),
     sellingPrice: z
       .union([
@@ -8843,8 +8817,8 @@ export const VariantCreateWithoutComboItemInputSchema: z.ZodType<Prisma.VariantC
 
 export const VariantUncheckedCreateWithoutComboItemInputSchema: z.ZodType<Prisma.VariantUncheckedCreateWithoutComboItemInput> =
   z.strictObject({
-    id: z.number().int().optional(),
-    productId: z.number().int(),
+    id: z.uuid().optional(),
+    productId: z.string(),
     sizeMl: z.lazy(() => SizeMlSchema),
     sellingPrice: z
       .union([
@@ -8903,6 +8877,9 @@ export const ComboUpdateToOneWithWhereWithoutComboItemsInputSchema: z.ZodType<Pr
 
 export const ComboUpdateWithoutComboItemsInputSchema: z.ZodType<Prisma.ComboUpdateWithoutComboItemsInput> =
   z.strictObject({
+    id: z
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
+      .optional(),
     name: z
       .union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
@@ -8954,10 +8931,7 @@ export const ComboUpdateWithoutComboItemsInputSchema: z.ZodType<Prisma.ComboUpda
 export const ComboUncheckedUpdateWithoutComboItemsInputSchema: z.ZodType<Prisma.ComboUncheckedUpdateWithoutComboItemsInput> =
   z.strictObject({
     id: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     name: z
       .union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
@@ -9031,6 +9005,9 @@ export const VariantUpdateToOneWithWhereWithoutComboItemInputSchema: z.ZodType<P
 
 export const VariantUpdateWithoutComboItemInputSchema: z.ZodType<Prisma.VariantUpdateWithoutComboItemInput> =
   z.strictObject({
+    id: z
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
+      .optional(),
     sizeMl: z
       .union([
         z.lazy(() => SizeMlSchema),
@@ -9093,16 +9070,10 @@ export const VariantUpdateWithoutComboItemInputSchema: z.ZodType<Prisma.VariantU
 export const VariantUncheckedUpdateWithoutComboItemInputSchema: z.ZodType<Prisma.VariantUncheckedUpdateWithoutComboItemInput> =
   z.strictObject({
     id: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     productId: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     sizeMl: z
       .union([
@@ -9537,7 +9508,7 @@ export const AccountUncheckedUpdateManyWithoutUserInputSchema: z.ZodType<Prisma.
 
 export const VariantCreateManyProductInputSchema: z.ZodType<Prisma.VariantCreateManyProductInput> =
   z.strictObject({
-    id: z.number().int().optional(),
+    id: z.uuid().optional(),
     sizeMl: z.lazy(() => SizeMlSchema),
     sellingPrice: z
       .union([
@@ -9562,6 +9533,9 @@ export const VariantCreateManyProductInputSchema: z.ZodType<Prisma.VariantCreate
 
 export const VariantUpdateWithoutProductInputSchema: z.ZodType<Prisma.VariantUpdateWithoutProductInput> =
   z.strictObject({
+    id: z
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
+      .optional(),
     sizeMl: z
       .union([
         z.lazy(() => SizeMlSchema),
@@ -9624,10 +9598,7 @@ export const VariantUpdateWithoutProductInputSchema: z.ZodType<Prisma.VariantUpd
 export const VariantUncheckedUpdateWithoutProductInputSchema: z.ZodType<Prisma.VariantUncheckedUpdateWithoutProductInput> =
   z.strictObject({
     id: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     sizeMl: z
       .union([
@@ -9691,10 +9662,7 @@ export const VariantUncheckedUpdateWithoutProductInputSchema: z.ZodType<Prisma.V
 export const VariantUncheckedUpdateManyWithoutProductInputSchema: z.ZodType<Prisma.VariantUncheckedUpdateManyWithoutProductInput> =
   z.strictObject({
     id: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     sizeMl: z
       .union([
@@ -9751,13 +9719,16 @@ export const VariantUncheckedUpdateManyWithoutProductInputSchema: z.ZodType<Pris
 
 export const ComboItemCreateManyVariantInputSchema: z.ZodType<Prisma.ComboItemCreateManyVariantInput> =
   z.strictObject({
-    id: z.number().int().optional(),
-    comboId: z.number().int(),
+    id: z.uuid().optional(),
+    comboId: z.string(),
     quantity: z.number().int(),
   });
 
 export const ComboItemUpdateWithoutVariantInputSchema: z.ZodType<Prisma.ComboItemUpdateWithoutVariantInput> =
   z.strictObject({
+    id: z
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
+      .optional(),
     quantity: z
       .union([
         z.number().int(),
@@ -9772,16 +9743,10 @@ export const ComboItemUpdateWithoutVariantInputSchema: z.ZodType<Prisma.ComboIte
 export const ComboItemUncheckedUpdateWithoutVariantInputSchema: z.ZodType<Prisma.ComboItemUncheckedUpdateWithoutVariantInput> =
   z.strictObject({
     id: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     comboId: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     quantity: z
       .union([
@@ -9794,16 +9759,10 @@ export const ComboItemUncheckedUpdateWithoutVariantInputSchema: z.ZodType<Prisma
 export const ComboItemUncheckedUpdateManyWithoutVariantInputSchema: z.ZodType<Prisma.ComboItemUncheckedUpdateManyWithoutVariantInput> =
   z.strictObject({
     id: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     comboId: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     quantity: z
       .union([
@@ -9815,13 +9774,16 @@ export const ComboItemUncheckedUpdateManyWithoutVariantInputSchema: z.ZodType<Pr
 
 export const ComboItemCreateManyComboInputSchema: z.ZodType<Prisma.ComboItemCreateManyComboInput> =
   z.strictObject({
-    id: z.number().int().optional(),
-    variantId: z.number().int(),
+    id: z.uuid().optional(),
+    variantId: z.string(),
     quantity: z.number().int(),
   });
 
 export const ComboItemUpdateWithoutComboInputSchema: z.ZodType<Prisma.ComboItemUpdateWithoutComboInput> =
   z.strictObject({
+    id: z
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
+      .optional(),
     quantity: z
       .union([
         z.number().int(),
@@ -9836,16 +9798,10 @@ export const ComboItemUpdateWithoutComboInputSchema: z.ZodType<Prisma.ComboItemU
 export const ComboItemUncheckedUpdateWithoutComboInputSchema: z.ZodType<Prisma.ComboItemUncheckedUpdateWithoutComboInput> =
   z.strictObject({
     id: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     variantId: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     quantity: z
       .union([
@@ -9858,16 +9814,10 @@ export const ComboItemUncheckedUpdateWithoutComboInputSchema: z.ZodType<Prisma.C
 export const ComboItemUncheckedUpdateManyWithoutComboInputSchema: z.ZodType<Prisma.ComboItemUncheckedUpdateManyWithoutComboInput> =
   z.strictObject({
     id: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.uuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     variantId: z
-      .union([
-        z.number().int(),
-        z.lazy(() => IntFieldUpdateOperationsInputSchema),
-      ])
+      .union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)])
       .optional(),
     quantity: z
       .union([

@@ -21,13 +21,19 @@ export default defineConfig([
     rules: {
       ...js.configs.recommended.rules,
       ...prettier.rules,
-      '@typescript-eslint/no-unused-vars': [
-        'warn',
-        { argsIgnorePattern: '^(req|res|next)$' },
-      ],
+
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',
     },
   },
   tseslint.configs.recommended,
+  {
+    rules: {
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^(req|res|next)$' },
+      ],
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
 ]);

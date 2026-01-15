@@ -105,7 +105,7 @@ enum SizeMl {
 }
 
 model Product {
-  id            Int           @id @default(autoincrement())
+  id            String        @id @default(uuid())
   name          String        @unique
   image         String?
   rating        Int           @default(0)
@@ -118,8 +118,8 @@ model Product {
 }
 
 model Variant {
-  id           Int         @id @default(autoincrement())
-  productId    Int
+  id           String      @id @default(uuid())
+  productId    String
   sizeMl       SizeMl
   sellingPrice Decimal
   costPrice    Decimal
@@ -133,15 +133,15 @@ model Variant {
 }
 
 model Stock {
-  id        Int @id @default(autoincrement())
-  variantId Int @unique
-  quantity  Int @default(0)
+  id        String @id @default(uuid())
+  variantId String @unique
+  quantity  Int    @default(0)
 
   variant Variant @relation(fields: [variantId], references: [id])
 }
 
 model Combo {
-  id            Int         @id @default(autoincrement())
+  id            String      @id @default(uuid())
   name          String
   image         String?
   sellingPrice  Decimal
@@ -153,9 +153,9 @@ model Combo {
 }
 
 model ComboItem {
-  id        Int @id @default(autoincrement())
-  variantId Int
-  comboId   Int
+  id        String @id @default(uuid())
+  variantId String
+  comboId   String
   quantity  Int
 
   combo   Combo   @relation(fields: [comboId], references: [id])
