@@ -1,3 +1,4 @@
+import type { Response } from 'express';
 import * as z from 'zod';
 
 import { CustomError } from './error';
@@ -18,4 +19,20 @@ export function zodValidate(schema: z.ZodType, args: any) {
       data: flat.fieldErrors,
     });
   }
+}
+
+export function sendSuccess(
+  res: Response,
+  status: number,
+  body: Omit<API.Success, 'type'>,
+) {
+  res.status(status).json({ type: 'success', ...body });
+}
+
+export function sendError(
+  res: Response,
+  status: number,
+  body: Omit<API.Error, 'type'>,
+) {
+  res.status(status).json({ type: 'error', error: { ...body } });
 }
