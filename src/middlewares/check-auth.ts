@@ -13,9 +13,8 @@ export async function checkAuth(
   const session = await auth.api.getSession({ headers });
 
   if (!session) {
-    throw new CustomError({
-      code: 'UNAUTHORIZED',
-      status: 401,
+    throw new CustomError(401, {
+      code: 'unauthorized',
       message: 'Missing or invalid authentication credentials',
     });
   }

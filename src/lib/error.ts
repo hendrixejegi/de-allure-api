@@ -1,28 +1,11 @@
-export class CustomError<T = unknown> extends Error {
-  code: string;
+export class CustomError extends Error {
   status: number;
-  data?: T | undefined;
+  body: API.Error['error'];
 
-  constructor({
-    code,
-    status,
-    message,
-    data,
-  }: {
-    code:
-      | 'BAD_REQUEST'
-      | 'UNAUTHORIZED'
-      | 'SERVER_ERROR'
-      | 'NOT_FOUND'
-      | 'INVALID_INPUT';
-    status: number;
-    message: string;
-    data?: T;
-  }) {
-    super(message);
-    this.code = code;
+  constructor(status: number, body: API.Error['error']) {
+    super();
     this.status = status;
-    this.data = data;
+    this.body = body;
   }
 }
 

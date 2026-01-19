@@ -8,14 +8,15 @@ import {
   getProducts,
   updateProductById,
 } from '../controllers/product.controller';
+import { checkAuth } from '../middlewares/check-auth';
 
 const router: ExpressRouter = Router();
 
-router.route('/').post(createProduct).get(getProducts);
+router.route('/').post([checkAuth, createProduct]).get(getProducts);
 router
   .route('/:id')
   .get(getProductById)
-  .delete(deleteProductById)
-  .patch(updateProductById);
+  .delete([checkAuth, deleteProductById])
+  .patch([checkAuth, updateProductById]);
 
 export default router;

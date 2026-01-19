@@ -1,153 +1,77 @@
 import type { Request, Response } from 'express';
 
-import type {
-  ProductCreateInput,
-  ProductFindUniqueArgs,
-} from '../generated/prisma/models';
 import {
   ProductCreateInputSchema,
-  ProductFindUniqueArgsSchema,
   ProductUpdateInputSchema,
+  ProductWhereUniqueInputSchema,
 } from '../generated/zod';
 import { CustomError } from '../lib/error';
 import { prisma } from '../lib/prisma';
-import {
-  checkValidateRequestResult,
-  validateRequestBody,
-  validateRequestParams,
-} from '../lib/request-validation';
-import { zodValidate } from '../lib/utils';
-import type { ApiResponse } from '../types/api';
+import { sendSuccess, zodParse } from '../lib/utils';
 
-export async function createProduct(
-  req: Request<object, object, ProductCreateInput>,
-  res: Response<ApiResponse>,
-) {
-  checkValidateRequestResult(
-    validateRequestBody(
-      req,
-      ['name', 'sex', 'concentration'],
-      ['image', 'rating', 'isActive'],
-    ),
-  );
+export async function createProduct(req: Request, res: Response) {
+  const allowed = zodParse(ProductCreateInputSchema, req.body);
 
-  const newProductData = req.body;
-
-  zodValidate(ProductCreateInputSchema, newProductData);
-
-  const product = await prisma.product.create({ data: newProductData });
-
-  res
-    .status(201)
-    .json({ success: true, message: 'Product created', data: product });
+  const product = await prisma.product.create({ data: allowed });
+  sendSuccess(res, 201, { data: product });
 }
 
-export async function getProducts(req: Request, res: Response<ApiResponse>) {
+export async function getProducts(req: Request, res: Response) {
   const products = await prisma.product.findMany();
-  res.status(200).json({
-    success: true,
-    message: 'Products retrieved successfully',
-    data: products,
-  });
+  const meta = {
+    total: products.length,
+  };
+
+  sendSuccess(res, 200, { data: products, meta });
 }
 
-export async function getProductById(
-  req: Request<{ id: string }>,
-  res: Response<ApiResponse>,
-) {
-  checkValidateRequestResult(validateRequestParams(req, ['id']));
+export async function getProductById(req: Request, res: Response) {
+  const allowed = zodParse(ProductWhereUniqueInputSchema, req.params);
 
-  const args: ProductFindUniqueArgs = { where: { id: req.params.id } };
-
-  zodValidate(ProductFindUniqueArgsSchema, args);
-
-  const product = await prisma.product.findUnique(args);
-
+  const product = await prisma.product.findUnique({ where: allowed });
   if (!product) {
-    throw new CustomError({
-      status: 404,
+    throw new CustomError(404, {
+      code: 'not_found',
       message: 'Product not found',
-      code: 'NOT_FOUND',
     });
   }
 
-  res.status(200).json({
-    success: true,
-    message: 'Product retrieved successfully',
-    data: product,
-  });
+  sendSuccess(res, 200, { data: product });
 }
 
-export async function deleteProductById(
-  req: Request<{ id: string }>,
-  res: Response<ApiResponse>,
-) {
-  checkValidateRequestResult(validateRequestParams(req, ['id']));
+export async function deleteProductById(req: Request, res: Response) {
+  const allowed = zodParse(ProductWhereUniqueInputSchema, req.params);
 
-  const args: ProductFindUniqueArgs = {
-    where: { id: req.params.id },
-  };
-
-  zodValidate(ProductFindUniqueArgsSchema, args);
-
-  const product = await prisma.product.findUnique(args);
-
+  const product = await prisma.product.findUnique({ where: allowed });
   if (!product) {
-    throw new CustomError({
-      code: 'NOT_FOUND',
-      status: 404,
+    throw new CustomError(404, {
+      code: 'not_found',
       message: 'Product not found',
     });
   }
 
   await prisma.product.delete({
-    where: { id: req.params.id },
+    where: allowed,
   });
-
-  res.status(204).send();
+  sendSuccess(res, 204);
 }
 
-export async function updateProductById(
-  req: Request<{ id: string }, object, Partial<ProductCreateInput>>,
-  res: Response<ApiResponse>,
-) {
-  checkValidateRequestResult(validateRequestParams(req, ['id']));
-  checkValidateRequestResult(
-    validateRequestBody(
-      req,
-      [],
-      ['name', 'image', 'rating', 'sex', 'concentration', 'isActive'],
-    ),
-  );
+export async function updateProductById(req: Request, res: Response) {
+  const allowedParams = zodParse(ProductWhereUniqueInputSchema, req.params);
+  const allowedBody = zodParse(ProductUpdateInputSchema, req.body);
 
-  const args: ProductFindUniqueArgs = {
-    where: { id: req.params.id },
-  };
-
-  zodValidate(ProductFindUniqueArgsSchema, args);
-
-  const product = prisma.product.findUnique(args);
-
+  const product = prisma.product.findUnique({ where: allowedParams });
   if (!product) {
-    throw new CustomError({
-      code: 'NOT_FOUND',
-      status: 404,
+    throw new CustomError(404, {
+      code: 'not_found',
       message: 'Product not found',
     });
   }
 
-  const updateData: Partial<ProductCreateInput> = req.body;
-
-  zodValidate(ProductUpdateInputSchema, updateData);
-
   const updatedProduct = await prisma.product.update({
-    where: { id: req.params.id },
-    data: updateData,
+    where: allowedParams,
+    data: allowedBody,
   });
 
-  res.status(200).json({
-    success: true,
-    message: 'Product updated successfully',
-    data: updatedProduct,
-  });
+  sendSuccess(res, 200, { data: updatedProduct });
 }

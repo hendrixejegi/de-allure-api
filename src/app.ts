@@ -4,7 +4,6 @@ import express from 'express';
 
 import config from './config';
 import { auth } from './lib/auth';
-import { checkAuth } from './middlewares/check-auth';
 import { errorHandler } from './middlewares/error-handler';
 import bucketRouter from './routers/bucket.router';
 import productsRouter from './routers/product.router';
@@ -22,7 +21,6 @@ app.use(cors(corsOptions));
 app.all('/api/auth/{*splat}', toNodeHandler(auth)); // Better auth handler
 
 app.use(express.json());
-app.use(checkAuth);
 
 // Routers
 app.use('/api/bucket', bucketRouter);
