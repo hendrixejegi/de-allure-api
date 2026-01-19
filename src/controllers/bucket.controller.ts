@@ -6,7 +6,7 @@ import type { Request, Response } from 'express';
 import z from 'zod';
 
 import { CustomError } from '../lib/error';
-import { bytesToMegabytes, zodParse } from '../lib/utils';
+import { bytesToMegabytes, sendSuccess, zodParse } from '../lib/utils';
 import { S3 } from '../services/r2';
 
 const UploadRequestSchema = z.strictObject({
@@ -46,7 +46,7 @@ export async function uploadImageToR2(
   const key = `${req.userId}/${safeName}`;
   const imageUrl = `${process.env.R2_PUBLIC_URL}/${key}`;
 
-  const postUrl = await getSignedUrl(
+  const putUrl = await getSignedUrl(
     S3 as any,
     new PutObjectCommand({
       Bucket: process.env.R2_BUCKET_NAME,
@@ -56,10 +56,5 @@ export async function uploadImageToR2(
     }),
   );
 
-  // Send back signed URL
-  return res.status(200).json({
-    success: true,
-    message: 'URL generated successfully',
-    data: { imageUrl, putUrl: postUrl },
-  });
+  sendSuccess(res, 200, { data: { imageUrl, putUrl } });
 }
